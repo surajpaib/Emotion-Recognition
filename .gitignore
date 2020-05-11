@@ -1,0 +1,12 @@
+
+__pycache__/
+
+*.zip
+
+*.gz
+
+data/icml_face_data.csv
+
+data/train.csv
+
+data/test.csv
