@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np 
 import torch
 
+from utils import normalize
+
 class FER2013Dataset(Dataset):
     """Face Expression Recognition Dataset"""
     
@@ -46,6 +48,7 @@ class FER2013Dataset(Dataset):
         img = img.split(" ") 
         img = np.array(img, dtype=np.uint8)
         img = img.reshape(48,48) 
+        img = normalize(img)
 
         sample = {'image': img, 'emotion': emotion}
         

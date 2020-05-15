@@ -3,9 +3,8 @@ import torch.nn as nn
 
 
 class BaselineModel(nn.Module):
-    def __init__(self, network_dict):
+    def __init__(self):
         super(BaselineModel, self).__init__()
-        self.n_classes = n_classes
 
 
         self.conv1 = ConvBlock({"in_channels": 1, 
