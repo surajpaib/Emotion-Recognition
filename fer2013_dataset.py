@@ -6,26 +6,41 @@ import torch
 class FER2013Dataset(Dataset):
     """Face Expression Recognition Dataset"""
     
-    def __init__(self, file_path):
+    def __init__(self, file_path, usage='Training'):
         """
         Args:
             file_path (string): Path to the csv file with emotion, pixel & usage.
         """
-        self.file_path = file_path
-        self.classes = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral') # Define the name of classes / expression
-        
+        self.file_path = file_path 
+        self.usage = usage
         self.data = pd.read_csv(self.file_path)
+
+        self.data = self.data[self.data[" Usage"] == self.usage]
+
         self.total_images = len(self.data) # Ignore header row
 
     def __len__(self):  
         return self.total_images
+
+
+    def get_summary_statistics(self):
+        """
+        Get summary statistics for the dataset. 
+        """
+        summary = {}
+        summary["class_occurences"] = self.data["emotion"].value_counts(normalize=True, sort=False).values
+        return summary
+
+    def get_class_mapping(self):
+        self.classes = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
+        return self.classes
     
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         
         
-        emotion, img = self.data.iloc[idx] #plus 1 to skip first row (column name)    
+        emotion, _, img = self.data.iloc[idx] #plus 1 to skip first row (column name)    
 
         emotion = int(emotion) 
         img = img.split(" ") 
