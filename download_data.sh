@@ -2,6 +2,6 @@ export KAGGLE_USERNAME=surajpai
 export KAGGLE_KEY=70543a1a5370285f5f64f0c355ca13e8
 
 cd data
-kaggle competitions download -c challenges-in-representation-learning-facial-expression-recognition-challenge
+kaggle datasets download -d ashishpatel26/facial-expression-recognitionferchallenge
 
-unzip challenges-in-representation-learning-facial-expression-recognition-challenge.zip
+unzip facial-expression-recognitionferchallenge.zip

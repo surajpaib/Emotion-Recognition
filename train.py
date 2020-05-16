@@ -3,9 +3,8 @@ from torch.utils.data import DataLoader
 import numpy as np
 import logging
 from tqdm import trange
-import wandb
 
-from utils import get_batch_evaluation_metrics, get_image_predictions, get_loss, concatenate_metrics, wandb_log, save_checkpoint
+from utils.utils import get_batch_evaluation_metrics, get_image_predictions, get_loss, concatenate_metrics, wandb_log, save_checkpoint
 from models.model import Model
 from fer2013_dataset import FER2013Dataset
 
@@ -13,6 +12,7 @@ from fer2013_dataset import FER2013Dataset
 def main(args):
 
     if args.wandb:
+        import wandb
         wandb.init(entity='surajpai', project='FacialEmotionRecognition')
 
     dataset = FER2013Dataset(args.data_path, "Training")
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_path", help="Path to the full dataset", default="data/icml_face_data.csv")
+    parser.add_argument("--data_path", help="Path to the full dataset", default="data/fer2013/fer2013/fer2013.csv")
     
     # Model configuration for the experiment
     parser.add_argument("--model_config", help="Path to the model configuration json", default="config/Baseline.json")

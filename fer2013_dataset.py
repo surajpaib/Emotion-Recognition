@@ -3,18 +3,18 @@ import pandas as pd
 import numpy as np 
 import torch
 
-from utils import normalize, preprocess
+from utils.utils import normalize, preprocess
 
 class FER2013Dataset(Dataset):    
     def __init__(self, file_path, usage='Training'):
         self.file_path = file_path 
         self.usage = usage
         self.data = pd.read_csv(self.file_path)
+        print(self.data["Usage"].unique())
 
-        self.data = self.data[self.data[" Usage"] == self.usage]
+        self.data = self.data[self.data["Usage"] == self.usage]
 
-        self.total_images = len(self.data) # Ignore header row
-
+        self.total_images = len(self.data)
     def __len__(self):  
         return self.total_images
 
@@ -36,8 +36,7 @@ class FER2013Dataset(Dataset):
             idx = idx.tolist()
         
         
-        emotion, _, image = self.data.iloc[idx] #plus 1 to skip first row (column name)    
-
+        emotion, image, _ = self.data.iloc[idx] 
         emotion = int(emotion) 
 
         image = image.split(" ") 

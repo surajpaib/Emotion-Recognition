@@ -12,7 +12,8 @@ def normalize(image):
     return image/255.
 
 def preprocess(image):
-    image = image.reshape(48,48) 
+    dim = int(np.sqrt(image.size))
+    image = image.reshape(dim, dim) 
     image = normalize(image)
     image = np.expand_dims(image, axis=0)
     return image
