@@ -1,11 +1,17 @@
 import torch
 import torch.nn as nn
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 class BaselineModel(nn.Module):
     def __init__(self):
         super(BaselineModel, self).__init__()
 
+        logger.info("\n \n Creating Model ... \n")
 
         self.conv1 = ConvBlock({"in_channels": 1, 
                                 "out_channels": 64,
@@ -78,6 +84,7 @@ class BaselineModel(nn.Module):
         y = self.network_head(y)
         return y
 
+
 class ConvBlock(nn.Module):
     def __init__(self, init_dict):
         super(ConvBlock, self).__init__()
@@ -86,7 +93,6 @@ class ConvBlock(nn.Module):
         self.conv = nn.Conv2d(self.init_dict["in_channels"], self.init_dict["out_channels"], \
                         padding=self.init_dict["padding"], stride=self.init_dict["stride"], kernel_size=self.init_dict["kernel_size"])
 
-        print(eval('torch.nn.{}'.format(self.init_dict["activation"])))
         self.activation = eval('torch.nn.{}'.format(self.init_dict["activation"]))(inplace=True)
         
         if self.init_dict["pooling"]:
@@ -98,7 +104,7 @@ class ConvBlock(nn.Module):
             normalization = eval("torch.nn.{}".format(self.init_dict["normalization"]))
             self.normalization = normalization( self.init_dict["out_channels"])
 
-
+        logger.info("\n \n Added Conv2D block with \n {}".format(self.init_dict))
 
     def forward(self, x):
         y = self.conv(x)
@@ -124,7 +130,7 @@ class NetworkHead(nn.Module):
         if self.init_dict["dropout"]:
             self.dropout1 = nn.Dropout()
 
-        self.fc1 = nn.Linear(self.init_dict["fc_input"], self.init_dict["fc2"])
+        self.fc1 = nn.Linear(self.init_dict["fc_input"], self.init_dict["fc1"])
         self.relu = nn.ReLU(inplace=True)
 
         if self.init_dict["dropout"]:
@@ -132,6 +138,9 @@ class NetworkHead(nn.Module):
         self.fc2 = nn.Linear(self.init_dict["fc1"], self.init_dict["fc2"])
         self.relu = nn.ReLU(inplace=True)
         self.final_layer = nn.Linear(self.init_dict["fc2"], self.init_dict["final_layer"])
+
+        logger.info("\n \n Added fully connected network head with \n {}".format(self.init_dict))
+
 
     def forward(self, x):
         x = torch.flatten(x, 1)

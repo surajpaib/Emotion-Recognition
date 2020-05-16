@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np 
 import torch
 
-from utils import normalize
+from utils import normalize, preprocess
 
 class FER2013Dataset(Dataset):
     """Face Expression Recognition Dataset"""
@@ -42,14 +42,15 @@ class FER2013Dataset(Dataset):
             idx = idx.tolist()
         
         
-        emotion, _, img = self.data.iloc[idx] #plus 1 to skip first row (column name)    
+        emotion, _, image = self.data.iloc[idx] #plus 1 to skip first row (column name)    
 
         emotion = int(emotion) 
-        img = img.split(" ") 
-        img = np.array(img, dtype=np.uint8)
-        img = img.reshape(48,48) 
-        img = normalize(img)
 
-        sample = {'image': img, 'emotion': emotion}
+        image = image.split(" ") 
+        image = np.array(image, dtype=np.float32)
+
+        image = preprocess(image)
+
+        sample = {'image': image, 'emotion': emotion}
         
         return sample
