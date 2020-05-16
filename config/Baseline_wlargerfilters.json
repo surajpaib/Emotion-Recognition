@@ -1,0 +1,63 @@
+{
+    "ConvBlocks": [
+        {
+            "in_channels": 1,
+            "out_channels": 128,
+            "kernel_size": 3,
+            "stride": 1,
+            "padding": 2,
+            "activation": "ReLU",
+            "normalization": "BatchNorm2d",
+            "pooling": {
+                "type": "MaxPool2d",
+                "kernel_size": 3,
+                "stride": 2
+            }
+        },
+        {
+            "in_channels": 128,
+            "out_channels": 256,
+            "kernel_size": 3,
+            "stride": 1,
+            "padding": 2,
+            "activation": "ReLU",
+            "normalization": "BatchNorm2d",
+            "pooling": {
+                "type": "MaxPool2d",
+                "kernel_size": 3,
+                "stride": 2
+            }
+        },
+        {
+            "in_channels": 256,
+            "out_channels": 512,
+            "kernel_size": 3,
+            "stride": 1,
+            "padding": 1,
+            "activation": "ReLU",
+            "normalization": "BatchNorm2d",
+            "pooling": {}
+        },
+        {
+            "in_channels": 512,
+            "out_channels": 512,
+            "kernel_size": 3,
+            "stride": 1,
+            "padding": 1,
+            "activation": "ReLU",
+            "normalization": "BatchNorm2d",
+            "pooling": {
+                "type": "MaxPool2d",
+                "kernel_size": 3,
+                "stride": 2
+            }
+        }
+    ],
+    "NetworkHead": {
+        "fc_input": 12800,
+        "fc1": 4096,
+        "fc2": 4096,
+        "final_layer": 7,
+        "dropout": true
+    }
+}

@@ -5,14 +5,8 @@ import torch
 
 from utils import normalize, preprocess
 
-class FER2013Dataset(Dataset):
-    """Face Expression Recognition Dataset"""
-    
+class FER2013Dataset(Dataset):    
     def __init__(self, file_path, usage='Training'):
-        """
-        Args:
-            file_path (string): Path to the csv file with emotion, pixel & usage.
-        """
         self.file_path = file_path 
         self.usage = usage
         self.data = pd.read_csv(self.file_path)
