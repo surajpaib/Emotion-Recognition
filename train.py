@@ -15,7 +15,7 @@ def main(args):
 
     if args.wandb:
         import wandb
-        wandb.init(entity='surajpai', project='FacialEmotionRecognition')
+        wandb.init(entity='surajpai', project='FacialEmotionRecognition',config=vars(args))
 
     dataset = FER2013Dataset(args.data_path, "Training")
     public_test_dataset = FER2013Dataset(args.data_path, "PublicTest")
