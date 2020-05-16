@@ -4,7 +4,9 @@ import numpy as np
 import logging
 from tqdm import trange
 
-from utils.utils import get_batch_evaluation_metrics, get_image_predictions, get_loss, concatenate_metrics, wandb_log, save_checkpoint
+from utils.metrics import Metrics
+from utils.utils import get_loss, save_checkpoint
+
 from models.model import Model
 from fer2013_dataset import FER2013Dataset
 
@@ -50,8 +52,13 @@ def main(args):
     # Get loss for training the network
     criterion = get_loss(args, class_weights)
     bestLoss = -1000    
+
+
+    # Create metric logger object
+    metrics = Metrics(upload=args.wandb)
     
     for n_epoch in range(args.epochs):
+        metrics.reset()
         # Utils logger
         logging.info(' Starting Epoch: {}/{} \n'.format(n_epoch, args.epochs))
         t = trange(len(train_loader), desc='Loss', leave=True)
@@ -64,7 +71,6 @@ def main(args):
         '''
 
         model.train()
-        train_eval_metrics = {"loss": 0.0, "accuracy":0.0}
 
         for idx, batch in enumerate(train_loader):
             optimizer.zero_grad()
@@ -80,16 +86,7 @@ def main(args):
             t.set_description("Loss : {}".format(loss.item()))
             t.update()
 
-            train_eval_metrics = get_batch_evaluation_metrics(train_eval_metrics, out, target, loss)
-
-
-        for key in train_eval_metrics:
-            train_eval_metrics[key] = train_eval_metrics[key]/len(train_loader)
-        
-
-
-        logging.info(" Train metrics at end of epoch {}: {} \n".format(n_epoch, train_eval_metrics))
-
+            metrics.update_train({"loss": loss.item(), "predicted": out, "ground_truth": target})
 
         '''
         
@@ -98,7 +95,6 @@ def main(args):
         '''
         logging.info(' Validating on the validation split ... \n \n')
 
-        val_eval_metrics = {"loss": 0.0, "accuracy":0.0}
         model.eval()
         with torch.no_grad():
             for idx, batch in enumerate(val_loader):
@@ -108,35 +104,20 @@ def main(args):
                 loss = criterion(out, target)
 
                 # Metrics and sample predictions
-                val_eval_metrics = get_batch_evaluation_metrics(val_eval_metrics, out, target, loss)
+                metrics.update_val({"loss": loss.item(), "predicted": out, "ground_truth": target, "image": image, "class_mapping": dataset.get_class_mapping()})
 
-                if idx == 0:
-                    image_predictions = get_image_predictions(image, target, out, dataset.get_class_mapping())
-
-            for key in train_eval_metrics:
-                val_eval_metrics[key] = val_eval_metrics[key]/len(val_loader)
-            logging.info(" Val metrics at end of epoch {}: {} \n\n\n".format(n_epoch, val_eval_metrics))
-
-            
-
+        
+        
+        metrics.display()
         # Weight Checkpointing to save the best model on validation loss
-        bestLoss = min(bestLoss, val_eval_metrics["loss"]) 
-        is_best = (bestLoss == val_eval_metrics["loss"])
+        bestLoss = min(bestLoss, metrics.metric_dict["loss@val"]) 
+        is_best = (bestLoss == metrics.metric_dict["loss@val"])
         save_checkpoint({
                     'epoch': n_epoch,
                     'state_dict': model.state_dict(),
                     'bestLoss': bestLoss,
                     'optimizer' : optimizer.state_dict(),
                 }, is_best)
-
-
-
-        # Aggregate metrics to send to weights and biases
-        metrics = concatenate_metrics(train_eval_metrics, val_eval_metrics)
-
-        if args.wandb:
-            wandb_log(image_predictions, metrics)
-
 
 
 if __name__ == "__main__":

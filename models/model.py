@@ -25,6 +25,8 @@ class Model(nn.Module):
 
         for conv in self.model_config["ConvBlocks"]:
             self.network.append(ConvBlock(conv))
+  
+
 
 
         self.network.append(NetworkHead(self.model_config["NetworkHead"]))
