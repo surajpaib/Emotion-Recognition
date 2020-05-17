@@ -12,6 +12,8 @@ from models.model import Model
 from fer2013_dataset import FER2013Dataset
 
 def main(args):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 
     if args.wandb:
         import wandb
@@ -39,7 +41,7 @@ def main(args):
     
 
     # Model initialization
-    model = Model(args.model_config)
+    model = Model(args.model_config).to(device)
 
     # Set torch optimizer
     optimizer = torch.optim.Adam(
@@ -74,7 +76,7 @@ def main(args):
         for idx, batch in enumerate(train_loader):
             optimizer.zero_grad()
 
-            image, target = batch["image"], batch["emotion"]
+            image, target = batch["image"].to(device), batch["emotion"].to(device)
 
             out = model(image)
             loss = criterion(out, target)
@@ -97,7 +99,7 @@ def main(args):
         model.eval()
         with torch.no_grad():
             for idx, batch in enumerate(val_loader):
-                image, target = batch["image"], batch["emotion"]
+                image, target = batch["image"].to(device), batch["emotion"].to(device)
                 out = model(image)
 
                 loss = criterion(out, target)
