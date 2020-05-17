@@ -83,3 +83,27 @@ def concatenate_metrics(train_metrics, val_metrics):
 
     return {**train_metrics, **val_metrics}
 
+
+def convertModel(model_path, model):
+    if not(torch.cuda.is_available()):
+        checkpoint = torch.load(model_path,  map_location=torch.device('cpu'))
+        state_dict = checkpoint['state_dict']
+        new_dict = {}
+        for key in state_dict:
+            new_key = key.replace('module.', '')
+            new_dict[new_key] = state_dict[key]
+        print(checkpoint['optimizer'].keys())
+        model.load_state_dict(new_dict)
+    else:
+        checkpoint = torch.load(model_path,  map_location=torch.device('cpu'))
+        state_dict = checkpoint['state_dict']        
+        new_dict = {}
+        for key in state_dict:
+            new_key = key.replace('module.', '')
+            new_dict[new_key] = state_dict[key]
+        print(checkpoint['optimizer'].keys())
+
+        model.load_state_dict(new_dict)
+
+    print("Loaded Model: {} successfully".format(model_path))
+    return model

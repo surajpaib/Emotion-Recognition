@@ -41,7 +41,7 @@ def main(args):
     
 
     # Model initialization
-    model = Model(args.model_config).to(device)
+    model = torch.nn.DataParallel(Model(args.model_config)).to(device)
 
     # Set torch optimizer
     optimizer = torch.optim.Adam(
