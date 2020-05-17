@@ -119,6 +119,7 @@ def train(args):
         
     if args.wandb:
         visualize_filters(model.modules())    
+        wandb.save('model_best.pth.tar')
 
     metrics.get_report()
 
