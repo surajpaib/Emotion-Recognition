@@ -52,7 +52,6 @@ def train(args):
     criterion = get_loss(args, class_weights)
     bestLoss = -1000
 
-
     # Create metric logger object
     metrics = Metrics(upload=args.wandb)
 
