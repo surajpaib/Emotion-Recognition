@@ -27,7 +27,7 @@ class Model(nn.Module):
             self.network.append(ConvBlock(conv))
   
 
-
+        self.network.append(nn.AdaptiveAvgPool2d((5, 5)))
 
         self.network.append(NetworkHead(self.model_config["NetworkHead"]))
 

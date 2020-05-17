@@ -9,9 +9,7 @@
             "activation": "ReLU",
             "normalization": {},
             "pooling": {
-                "type": "MaxPool2d",
-                "kernel_size": 2,
-                "stride":2
+     
             }
         },
 
@@ -26,7 +24,7 @@
             "pooling": {
                 "type": "MaxPool2d",
                 "kernel_size": 2,
-                "stride":2
+                "stride": 2
             }
         },
         {
@@ -38,9 +36,7 @@
             "activation": "ReLU",
             "normalization": {},
             "pooling": {
-                "type": "MaxPool2d",
-                "kernel_size": 2,
-                "stride":2
+                
             }
         },
         {
@@ -59,8 +55,8 @@
         }
     ],
     "NetworkHead": {
-        "fc_input": 576,
-        "fc1": 32,
+        "fc_input": 1600,
+        "fc1": 64,
         "final_layer": 7,
         "dropout": true
     }

@@ -11,7 +11,7 @@ from utils.viz import visualize_filters
 from models.model import Model
 from fer2013_dataset import FER2013Dataset
 
-def main(args):
+def train(args):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
@@ -32,7 +32,7 @@ def main(args):
     # Get class weights from class occurences in the dataset. 
     dataset_summary = dataset.get_summary_statistics()
     class_weights = (1/dataset_summary["class_occurences"])
-    class_weights = class_weights / np.sum(class_weights)
+    class_weights = torch.Tensor(class_weights / np.sum(class_weights)).to(device)
 
     
 
@@ -46,8 +46,6 @@ def main(args):
     # Set torch optimizer
     optimizer = torch.optim.Adam(
         model.parameters(),
-        lr=1e-2,
-        weight_decay=0.5e-4,
     )
 
     # Get loss for training the network
@@ -72,7 +70,7 @@ def main(args):
 
         model.train()
 
-        for idx, batch in tqdm(enumerate(train_loader)):
+        for idx, batch in enumerate(tqdm(train_loader)):
             optimizer.zero_grad()
 
             image, target = batch["image"].to(device), batch["emotion"].to(device)
@@ -149,4 +147,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(args)
+    train(args)
