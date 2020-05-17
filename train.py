@@ -29,16 +29,16 @@ def train(args):
 
     logging.info('Samples in the training set: {}\n Samples in the validation set: {} \n\n'.format(len(train_dataset), len(validation_dataset)))
 
-    # Get class weights from class occurences in the dataset. 
+    # Get class weights from class occurences in the dataset.
     dataset_summary = dataset.get_summary_statistics()
     class_weights = (1/dataset_summary["class_occurences"])
     class_weights = torch.Tensor(class_weights / np.sum(class_weights)).to(device)
 
-    
+
 
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=True)
     val_loader = DataLoader(validation_dataset, batch_size=args.batch_size, shuffle=True, pin_memory=True)
-    
+
 
     # Model initialization
     model = torch.nn.DataParallel(Model(args.model_config)).to(device)
@@ -50,12 +50,12 @@ def train(args):
 
     # Get loss for training the network
     criterion = get_loss(args, class_weights)
-    bestLoss = -1000    
+    bestLoss = -1000
 
 
     # Create metric logger object
     metrics = Metrics(upload=args.wandb)
-    
+
     for n_epoch in range(args.epochs):
         metrics.reset()
         # Utils logger
@@ -63,9 +63,9 @@ def train(args):
 
 
         '''
-        
-        TRAINING 
-        
+
+        TRAINING
+
         '''
 
         model.train()
@@ -80,13 +80,13 @@ def train(args):
 
             loss.backward()
             optimizer.step()
-        
+
             metrics.update_train({"loss": loss.item(), "predicted": out, "ground_truth": target})
 
         '''
-        
-        VALIDATION 
-        
+
+        VALIDATION
+
         '''
         logging.info(' Validating on the validation split ... \n \n')
 
@@ -105,20 +105,21 @@ def train(args):
 
         metrics.display()
         # Weight Checkpointing to save the best model on validation loss
-        bestLoss = min(bestLoss, metrics.metric_dict["loss@val"]) 
+        save_path = "./saved_models/" + args.model_save_dir.split('/')[-1].split('.')[0] + ".pth.tar"
+        bestLoss = min(bestLoss, metrics.metric_dict["loss@val"])
         is_best = (bestLoss == metrics.metric_dict["loss@val"])
         save_checkpoint({
                     'epoch': n_epoch,
                     'state_dict': model.state_dict(),
                     'bestLoss': bestLoss,
                     'optimizer' : optimizer.state_dict(),
-                }, is_best)
+                }, is_best, save_path)
 
-    
 
-        
+
+
     if args.wandb:
-        visualize_filters(model.modules())    
+        visualize_filters(model.modules())
         wandb.save('model_best.pth.tar')
 
     metrics.get_report()
@@ -129,7 +130,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_path", help="Path to the full dataset", default="data/fer2013/fer2013/fer2013.csv")
-    
+
     # Model configuration for the experiment
     parser.add_argument("--model_config", help="Path to the model configuration json", default="config/Baseline.json")
 
@@ -137,11 +138,11 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", help="Number of epochs to train", default=100)
     parser.add_argument("--batch_size", help="Batch size", type=int, default=128)
     parser.add_argument("--train_split", help="Train-valid split", type=float, default=0.8)
-    
+
     # Loss-specific hyperparameters
     parser.add_argument("--balanced_loss", help="if True, weights losses according to class instances", type=bool, default=False)
     parser.add_argument("--loss", help="Type of loss to be used", type=str, default='CrossEntropyLoss')
-    
+
     parser.add_argument("--wandb", help="Wandb integration", type=bool, default=False)
 
 
