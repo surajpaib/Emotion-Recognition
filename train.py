@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 import numpy as np
 import logging
-from tqdm import trange
+from tqdm import tqdm
 
 from utils.metrics import Metrics
 from utils.utils import get_loss, save_checkpoint
@@ -62,7 +62,6 @@ def main(args):
         metrics.reset()
         # Utils logger
         logging.info(' Starting Epoch: {}/{} \n'.format(n_epoch, args.epochs))
-        t = trange(len(train_loader), desc='Loss', leave=True)
 
 
         '''
@@ -73,7 +72,7 @@ def main(args):
 
         model.train()
 
-        for idx, batch in enumerate(train_loader):
+        for idx, batch in tqdm(enumerate(train_loader)):
             optimizer.zero_grad()
 
             image, target = batch["image"].to(device), batch["emotion"].to(device)
@@ -84,9 +83,6 @@ def main(args):
             loss.backward()
             optimizer.step()
         
-            t.set_description("Loss : {}".format(loss.item()))
-            t.update()
-
             metrics.update_train({"loss": loss.item(), "predicted": out, "ground_truth": target})
 
         '''
