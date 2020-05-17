@@ -6,10 +6,10 @@ from tqdm import trange
 
 from utils.metrics import Metrics
 from utils.utils import get_loss, save_checkpoint
+from utils.viz import visualize_filters
 
 from models.model import Model
 from fer2013_dataset import FER2013Dataset
-
 
 def main(args):
 
@@ -42,10 +42,9 @@ def main(args):
     model = Model(args.model_config)
 
     # Set torch optimizer
-    optimizer = torch.optim.SGD(
+    optimizer = torch.optim.Adam(
         model.parameters(),
         lr=1e-2,
-        momentum=0.9,
         weight_decay=0.5e-4,
     )
 
@@ -106,8 +105,8 @@ def main(args):
                 # Metrics and sample predictions
                 metrics.update_val({"loss": loss.item(), "predicted": out, "ground_truth": target, "image": image, "class_mapping": dataset.get_class_mapping()})
 
-        
-        
+
+
         metrics.display()
         # Weight Checkpointing to save the best model on validation loss
         bestLoss = min(bestLoss, metrics.metric_dict["loss@val"]) 
@@ -118,6 +117,14 @@ def main(args):
                     'bestLoss': bestLoss,
                     'optimizer' : optimizer.state_dict(),
                 }, is_best)
+
+    
+
+        
+    if args.wandb:
+        visualize_filters(model.modules())    
+
+    metrics.get_report()
 
 
 if __name__ == "__main__":

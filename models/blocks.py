@@ -56,13 +56,7 @@ class NetworkHead(nn.Module):
 
         self.fc1 = nn.Linear(self.init_dict["fc_input"], self.init_dict["fc1"])
         self.relu = nn.ReLU(inplace=True)
-
-        if self.init_dict["dropout"]:
-            self.dropout2 = nn.Dropout()
-        self.fc2 = nn.Linear(self.init_dict["fc1"], self.init_dict["fc2"])
-        self.relu = nn.ReLU(inplace=True)
-        self.final_layer = nn.Linear(self.init_dict["fc2"], self.init_dict["final_layer"])
-
+        self.final_layer = nn.Linear(self.init_dict["fc1"], self.init_dict["final_layer"])
         logger.info("\n \n Added fully connected network head with \n {}".format(self.init_dict))
 
 
@@ -74,12 +68,6 @@ class NetworkHead(nn.Module):
 
         y = self.fc1(y)
         y = self.relu(y)
-        if self.init_dict["dropout"]:
-            y = self.dropout2(y)
-
-        y = self.fc2(y)
-        y = self.relu(y)
-
         y = self.final_layer(y)
 
         return y

@@ -1,6 +1,9 @@
 import torch
 import wandb
 import numpy as np
+from sklearn.metrics import classification_report, precision_recall_fscore_support
+import pandas as pd
+
 
 import logging
 
@@ -57,6 +60,32 @@ class Metrics:
                       "Ground Truth": self.class_mapping[metric_dict["ground_truth"][idx]]})
 
 
+    def get_report(self):
+        train_predicted = np.array(self.train_predicted).argmax(axis=1).tolist()
+        train_gt = np.array(self.train_ground_truth).tolist()
+
+        val_predicted = np.array(self.val_predicted).argmax(axis=1).tolist()
+        val_gt = np.array(self.val_ground_truth).tolist()
+
+        train_report = classification_report(train_gt, train_predicted)
+        val_report = classification_report(val_gt, val_predicted)
+
+        logger.info("Train Report: {} \n\n".format(train_report))
+        logger.info("Validation Report: {}\n\n".format(val_report))
+
+        if self.upload:
+            train_scores = precision_recall_fscore_support(train_gt, train_predicted)
+            val_scores = precision_recall_fscore_support(val_gt, val_predicted)
+
+            wandb.log({
+                        "recision@train" : np.mean(train_scores[0]).round(2),
+                        "recall@train" : np.mean(train_scores[1]).round(2),
+                        "f1-score@train" : np.mean(train_scores[2]).round(2),
+                        "recision@val" : np.mean(val_scores[0]).round(2),
+                        "recall@val" : np.mean(val_scores[1]).round(2),
+                        "f1-score@val" : np.mean(val_scores[2]).round(2),
+                        })
+
 
     def display(self):
         self.metric_dict["loss@train"] = np.mean(self.train_losses)
@@ -72,6 +101,7 @@ class Metrics:
 
         self.metric_dict["accuracy@train"] = np.mean(train_predicted.argmax(axis=1) == train_gt) * 100
         self.metric_dict["accuracy@val"] = np.mean(val_predicted.argmax(axis=1) == val_gt) * 100
+        logger.info("Metrics {}".format(self.metric_dict))
 
 
         if self.upload:
@@ -91,10 +121,6 @@ class Metrics:
             self.metric_dict["roc"] = wandb.plots.ROC(val_gt, val_predicted, self.class_mapping)
             self.metric_dict["confusion_plot"] = wandb.sklearn.plot_confusion_matrix(val_gt, val_predicted.argmax(axis=1), self.class_mapping)
 
-
-
-
             wandb.log(self.metric_dict)
 
 
-        logger.info("Metrics {}".format(self.metric_dict))

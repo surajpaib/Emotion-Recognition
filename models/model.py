@@ -32,7 +32,7 @@ class Model(nn.Module):
         self.network.append(NetworkHead(self.model_config["NetworkHead"]))
 
        
-        logging.info(self.network)
+        logger.info(self.network)
 
 
         if initialize_weights:
