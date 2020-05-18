@@ -5,7 +5,7 @@
             "out_channels": 32,
             "kernel_size": 7,
             "stride": 1,
-            "padding": 2,
+            "padding": 6,
             "activation": "ReLU",
             "normalization": {},
             "pooling": {

@@ -15,7 +15,7 @@ def train(args):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-    if args.wandb:
+    if args.wandb == 1:
         import wandb
         wandb.init(entity='surajpai', project='FacialEmotionRecognition',config=vars(args))
 
@@ -104,7 +104,7 @@ def train(args):
 
         metrics.display()
         # Weight Checkpointing to save the best model on validation loss
-        save_path = "./saved_models/" + args.model_save_dir.split('/')[-1].split('.')[0] + ".pth.tar"
+        save_path = "./saved_models/" + args.model_config.split('/')[-1].split('.')[0] + ".pth.tar"
         bestLoss = min(bestLoss, metrics.metric_dict["loss@val"])
         is_best = (bestLoss == metrics.metric_dict["loss@val"])
         save_checkpoint({
@@ -117,7 +117,7 @@ def train(args):
 
 
 
-    if args.wandb:
+    if args.wandb == 1:
         visualize_filters(model.modules())
         wandb.save('model_best.pth.tar')
 
@@ -128,13 +128,13 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_path", help="Path to the full dataset", default="data/fer2013/fer2013/fer2013.csv")
+    parser.add_argument("--data_path", help="Path to the full dataset", type=str, default="data/fer2013/fer2013/fer2013.csv")
 
     # Model configuration for the experiment
-    parser.add_argument("--model_config", help="Path to the model configuration json", default="config/Baseline.json")
+    parser.add_argument("--model_config", help="Path to the model configuration json", type=str, default="config/Baseline.json")
 
     # Training hyperparameters
-    parser.add_argument("--epochs", help="Number of epochs to train", default=100)
+    parser.add_argument("--epochs", help="Number of epochs to train",type=int, default=100)
     parser.add_argument("--batch_size", help="Batch size", type=int, default=128)
     parser.add_argument("--train_split", help="Train-valid split", type=float, default=0.8)
 
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     parser.add_argument("--balanced_loss", help="if True, weights losses according to class instances", type=bool, default=False)
     parser.add_argument("--loss", help="Type of loss to be used", type=str, default='CrossEntropyLoss')
 
-    parser.add_argument("--wandb", help="Wandb integration", type=bool, default=False)
+    parser.add_argument("--wandb", help="Wandb integration", type=int, default=0)
 
 
 

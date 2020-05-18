@@ -55,36 +55,32 @@
         },
         {
             "in_channels": 64,
-            "out_channels": 64,
+            "out_channels": 128,
             "kernel_size": 3,
             "stride": 1,
             "padding": 1,
             "activation": "ReLU",
             "normalization": {},
             "pooling": {
-                "type": "MaxPool2d",
-                "kernel_size": 2,
-                "stride":2
+
             }
         },
         {
-            "in_channels": 64,
-            "out_channels": 64,
+            "in_channels": 128,
+            "out_channels": 128,
             "kernel_size": 3,
             "stride": 1,
             "padding": 1,
             "activation": "ReLU",
             "normalization": {},
             "pooling": {
-                "type": "MaxPool2d",
-                "kernel_size": 2,
-                "stride":2
+
             }
         }
 
     ],
     "NetworkHead": {
-        "fc_input": 1600,
+        "fc_input": 3200,
         "fc1": 64,
         "final_layer": 7,
         "dropout": true
