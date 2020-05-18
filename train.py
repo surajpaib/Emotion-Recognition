@@ -1,11 +1,12 @@
 import torch
 from torch.utils.data import DataLoader
+from torchvision import transforms
 import numpy as np
 import logging
 from tqdm import tqdm
 
 from utils.metrics import Metrics
-from utils.utils import get_loss, save_checkpoint
+from utils.utils import get_loss, save_checkpoint, apply_transforms
 from utils.viz import visualize_filters
 
 from models.model import Model
@@ -62,11 +63,15 @@ def train(args):
     # Create metric logger object
     metrics = Metrics(upload=args.wandb)
 
+    # Define augmentation transforms, if --augment is enabled
+    if args.augment == 1:
+        transform = transforms.RandomChoice([transforms.RandomHorizontalFlip(p=0.75),
+                                             transforms.RandomRotation(degrees=60)])
+
     for n_epoch in range(args.epochs):
         metrics.reset()
         # Utils logger
         logging.info(' Starting Epoch: {}/{} \n'.format(n_epoch, args.epochs))
-
 
         '''
 
@@ -78,6 +83,11 @@ def train(args):
 
         for idx, batch in enumerate(tqdm(train_loader)):
             optimizer.zero_grad()
+
+            # Apply augmentation transforms, if --augment is enabled
+            if args.augment == 1 and n_epoch%5 == 0:
+                batch = apply_transforms(batch, transform)
+
 
             image, target = batch["image"].to(device), batch["emotion"].to(device)
 
@@ -135,7 +145,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
+    # Data related
     parser.add_argument("--data_path", help="Path to the full dataset", type=str, default="data/fer2013/fer2013/fer2013.csv")
+    parser.add_argument("--augment", help="Enable data augmentation", type=int, default=0)
 
     # Model configuration for the experiment
     parser.add_argument("--model_config", help="Path to the model configuration json", type=str, default="config/Baseline.json")
