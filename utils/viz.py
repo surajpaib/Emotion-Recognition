@@ -18,9 +18,7 @@ def visualize_filters(modules):
             filter_grid = filter_grid.permute(1, 2, 0)
 
             first_filter_grid = filter_grid[:, :, 0]
-
-            plt.imshow(first_filter_grid)
-            plt.show() 
+         
             wandb.log({"Conv{} Filters".format(count): wandb.Image(first_filter_grid)})
             count += 1
 

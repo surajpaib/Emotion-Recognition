@@ -7,7 +7,7 @@
             "stride": 1,
             "padding": 4,
             "activation": "ReLU",
-            "normalization": {},
+            "normalization": "BatchNorm2d",
             "pooling": {
 
             }
@@ -20,7 +20,7 @@
             "stride": 1,
             "padding": 4,
             "activation": "ReLU",
-            "normalization": {},
+            "normalization": "BatchNorm2d",
             "pooling": {
                 "type": "MaxPool2d",
                 "kernel_size": 2,
@@ -34,7 +34,7 @@
             "stride": 1,
             "padding": 2,
             "activation": "ReLU",
-            "normalization": {},
+            "normalization": "BatchNorm2d",
             "pooling": {
 
             }
@@ -46,7 +46,7 @@
             "stride": 1,
             "padding": 1,
             "activation": "ReLU",
-            "normalization": {},
+            "normalization": "BatchNorm2d",
             "pooling": {
                 "type": "MaxPool2d",
                 "kernel_size": 2,

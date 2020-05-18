@@ -82,8 +82,11 @@ class Metrics:
             val_predicted = np.array(self.val_predicted).argmax(axis=1).tolist()
             val_gt = np.array(self.val_ground_truth).tolist()
 
-            train_report = classification_report(train_gt, train_predicted)
-            val_report = classification_report(val_gt, val_predicted)
+            train_report = classification_report(train_gt, train_predicted, output_dict=True)
+            val_report = classification_report(val_gt, val_predicted, output_dict=True)
+
+            train_report = pd.DataFrame(train_report)
+            val_report = pd.DataFrame(val_report)
 
             logger.info("Train Report: {} \n\n".format(train_report))
             logger.info("Validation Report: {}\n\n".format(val_report))
@@ -101,12 +104,18 @@ class Metrics:
                             "f1-score@val" : np.mean(val_scores[2]).round(2),
                             })
 
+            return train_report, val_report
+
         elif mode == "test":
             test_predicted = np.array(self.test_predicted).argmax(axis=1).tolist()
             test_gt = np.array(self.test_ground_truth).tolist()
 
-            test_report = classification_report(test_gt, test_predicted)
+            test_report = classification_report(test_gt, test_predicted, output_dict=True)
+            test_report = pd.DataFrame(test_report)
+
             logger.info("Test Report: {} \n\n".format(test_report))
+            return test_report
+
 
 
     def display(self):
@@ -140,5 +149,6 @@ class Metrics:
             self.metric_dict["confusion_plot"] = wandb.sklearn.plot_confusion_matrix(val_gt, val_predicted.argmax(axis=1), self.class_mapping)
 
             wandb.log(self.metric_dict)
+
 
 

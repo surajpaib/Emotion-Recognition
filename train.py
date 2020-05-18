@@ -11,11 +11,18 @@ from utils.viz import visualize_filters
 from models.model import Model
 from fer2013_dataset import FER2013Dataset
 
+# Reproducibility Settings
+torch.manual_seed(0)
+np.random.seed(0)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
+
 def train(args):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-    if args.wandb == 1:
+    if args.wandb:
         import wandb
         wandb.init(entity='surajpai', project='FacialEmotionRecognition',config=vars(args))
 
@@ -81,7 +88,6 @@ def train(args):
             optimizer.step()
 
             metrics.update_train({"loss": loss.item(), "predicted": out, "ground_truth": target})
-
         '''
 
         VALIDATION
@@ -101,10 +107,9 @@ def train(args):
                 metrics.update_val({"loss": loss.item(), "predicted": out, "ground_truth": target, "image": image, "class_mapping": dataset.get_class_mapping()})
 
 
-
         metrics.display()
         # Weight Checkpointing to save the best model on validation loss
-        save_path = "./saved_models/" + args.model_config.split('/')[-1].split('.')[0] + ".pth.tar"
+        save_path = "./saved_models/{}.pth.tar".format(args.model_config.split('/')[-1].split('.')[0])
         bestLoss = min(bestLoss, metrics.metric_dict["loss@val"])
         is_best = (bestLoss == metrics.metric_dict["loss@val"])
         save_checkpoint({
@@ -116,12 +121,14 @@ def train(args):
 
 
 
-
-    if args.wandb == 1:
+    if args.wandb:
         visualize_filters(model.modules())
-        wandb.save('model_best.pth.tar')
+        wandb.save(save_path)
 
-    metrics.get_report()
+    train_report, val_report = metrics.get_report()
+
+    train_report.to_csv("{}_trainreport.csv".format(save_path.rstrip(".pth.tar")))
+    val_report.to_csv("{}_valreport.csv".format(save_path.rstrip(".pth.tar")))
 
 
 if __name__ == "__main__":
@@ -142,9 +149,7 @@ if __name__ == "__main__":
     parser.add_argument("--balanced_loss", help="if True, weights losses according to class instances", type=bool, default=False)
     parser.add_argument("--loss", help="Type of loss to be used", type=str, default='CrossEntropyLoss')
 
-    parser.add_argument("--wandb", help="Wandb integration", type=int, default=0)
-
-
+    parser.add_argument("--wandb", help="Wandb integration", type=bool, default=0)
 
     args = parser.parse_args()
 
