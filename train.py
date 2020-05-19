@@ -23,7 +23,7 @@ def train(args):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-    if args.wandb:
+    if args.wandb == 1:
         import wandb
         wandb.init(entity='surajpai', project='FacialEmotionRecognition',config=vars(args))
 
@@ -65,8 +65,8 @@ def train(args):
 
     # Define augmentation transforms, if --augment is enabled
     if args.augment == 1:
-        transform = transforms.RandomChoice([transforms.RandomHorizontalFlip(p=0.75),
-                                             transforms.RandomRotation(degrees=60)])
+        transform = transforms.RandomChoice([transforms.RandomHorizontalFlip(p=0.75), transforms.RandomAffine(15, translate=(0.1, 0.1), scale=(1.2, 1.2), shear=15),
+                                            transforms.ColorJitter()])
 
     for n_epoch in range(args.epochs):
         metrics.reset()
@@ -85,7 +85,7 @@ def train(args):
             optimizer.zero_grad()
 
             # Apply augmentation transforms, if --augment is enabled
-            if args.augment == 1 and n_epoch%5 == 0:
+            if args.augment == 1 and n_epoch % 2 == 0:
                 batch = apply_transforms(batch, transform)
 
 
@@ -131,7 +131,7 @@ def train(args):
 
 
 
-    if args.wandb:
+    if args.wandb == 1:
         visualize_filters(model.modules())
         wandb.save(save_path)
 
@@ -139,7 +139,7 @@ def train(args):
 
     train_report.to_csv("{}_trainreport.csv".format(save_path.rstrip(".pth.tar")))
     val_report.to_csv("{}_valreport.csv".format(save_path.rstrip(".pth.tar")))
-
+    
 
 if __name__ == "__main__":
     import argparse
@@ -147,21 +147,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # Data related
     parser.add_argument("--data_path", help="Path to the full dataset", type=str, default="data/fer2013/fer2013/fer2013.csv")
-    parser.add_argument("--augment", help="Enable data augmentation", type=int, default=0)
+    parser.add_argument("--augment", help="Enable data augmentation", type=int, default=1)
 
     # Model configuration for the experiment
     parser.add_argument("--model_config", help="Path to the model configuration json", type=str, default="config/Baseline.json")
 
     # Training hyperparameters
     parser.add_argument("--epochs", help="Number of epochs to train",type=int, default=100)
-    parser.add_argument("--batch_size", help="Batch size", type=int, default=128)
+    parser.add_argument("--batch_size", help="Batch size", type=int, default=64)
     parser.add_argument("--train_split", help="Train-valid split", type=float, default=0.8)
 
     # Loss-specific hyperparameters
-    parser.add_argument("--balanced_loss", help="if True, weights losses according to class instances", type=bool, default=False)
+    parser.add_argument("--balanced_loss", help="if True, weights losses according to class instances", type=int, default=1)
     parser.add_argument("--loss", help="Type of loss to be used", type=str, default='CrossEntropyLoss')
 
-    parser.add_argument("--wandb", help="Wandb integration", type=bool, default=0)
+    parser.add_argument("--wandb", help="Wandb integration", type=int, default=0)
 
     args = parser.parse_args()
 

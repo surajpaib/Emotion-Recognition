@@ -4,12 +4,12 @@
 
 
 echo "> Training Baseline"
-python train.py --model_config "./config/Baseline.json" --wandb 0 --epochs 1
+python train.py --model_config "./config/Baseline.json" --wandb 0 --epochs 100
 
 
 echo "> Training Batch Norm model"
-python train.py --model_config "./config/normalization_exp/BatchNorm.json" --wandb 0 --epochs 1
+python train.py --model_config "./config/normalization_exp/BatchNorm.json" --wandb 0 --epochs 100
 
 
 echo "> Training Instance model"
-python train.py --model_config "./config/normalization_exp/InstanceNorm.json" --wandb 0 --epochs 1
+python train.py --model_config "./config/normalization_exp/InstanceNorm.json" --wandb 0 --epochs 100

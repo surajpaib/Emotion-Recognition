@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Metrics:
-    def __init__(self, upload=False):
-        self.upload = upload
+    def __init__(self, upload=0):
+        self.upload = bool(upload)
         self.reset()
 
     def reset(self):

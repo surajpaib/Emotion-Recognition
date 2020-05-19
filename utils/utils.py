@@ -30,7 +30,7 @@ Training Utils
 def get_loss(args, class_weights):
     loss_str = eval('torch.nn.{}'.format(args.loss))
 
-    if args.balanced_loss:
+    if args.balanced_loss == 1:
         criterion = loss_str(weight=class_weights)
     else:
         criterion = loss_str()
