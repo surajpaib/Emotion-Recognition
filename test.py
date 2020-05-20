@@ -35,9 +35,8 @@ def test(args):
 
 
 
-    metrics.get_report(mode="test")
-      
-
+    test_report = metrics.get_report(mode="test")
+    test_report.to_csv("results/{}_testreport.csv".format(args.load_model))
 
 
 if __name__ == "__main__":

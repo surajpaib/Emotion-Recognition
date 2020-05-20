@@ -9,4 +9,6 @@ data/*
 
 wandb/
 
-*.tar
+saved_models/*.tar
+
+checkpoint.pth.tar

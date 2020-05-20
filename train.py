@@ -158,7 +158,7 @@ if __name__ == "__main__":
     parser.add_argument("--train_split", help="Train-valid split", type=float, default=0.8)
 
     # Loss-specific hyperparameters
-    parser.add_argument("--balanced_loss", help="if True, weights losses according to class instances", type=int, default=1)
+    parser.add_argument("--balanced_loss", help="if True, weights losses according to class instances", type=int, default=0)
     parser.add_argument("--loss", help="Type of loss to be used", type=str, default='CrossEntropyLoss')
 
     parser.add_argument("--wandb", help="Wandb integration", type=int, default=0)

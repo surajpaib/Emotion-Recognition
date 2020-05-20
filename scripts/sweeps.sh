@@ -1,0 +1,4 @@
+wandb agent surajpai/FacialEmotionRecognition/q70htsur
+wandb agent surajpai/FacialEmotionRecognition/57vracr4
+wandb agent surajpai/FacialEmotionRecognition/ixzxx6lx
+wandb agent surajpai/FacialEmotionRecognition/yn0pyv2u
