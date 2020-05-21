@@ -75,7 +75,7 @@ def convertModel(model_path, model):
         print(checkpoint['optimizer'].keys())
         model.load_state_dict(new_dict)
     else:
-        checkpoint = torch.load(model_path,  map_location=torch.device('cpu'))
+        checkpoint = torch.load(model_path,  map_location=torch.device('cuda:0'))
         state_dict = checkpoint['state_dict']
         new_dict = {}
         for key in state_dict:
