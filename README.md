@@ -10,13 +10,13 @@ Trained and tested on python 3.6
 pip install -r requirements.txt
 
 ```
-Put the unzipped kaggle data in the data/ folder. The fer2013.csv file must be at the path data/fer2013/fer2013/fer2013.csv. The path to the csv can also be manually specified ( Look at Running the code instructions)
+Put the unzipped kaggle data in the ```data/``` folder. The fer2013.csv file must be at the path ```data/fer2013/fer2013/fer2013.csv.``` The path to the csv can also be manually specified ( Look at Running the code instructions)
 
 Alternatively, on linux 
 ```
 bash scripts/download_data.sh
 ```
-can be run to save download and store the data in the needed location
+can be run to download and store the data in the needed location
 
 
 
@@ -112,8 +112,9 @@ Run
 ```
 jupyter-notebook
 ```
-Then open the Visualizing_CNNs.ipynb in the jupyter notebook environment.
+Then open the ```Visualizing_CNNs.ipynb``` in the jupyter notebook environment.
 
+A pdf of the notebook can also be found at ```Visualizing_CNNs.pdf```
 
 
 ## Code walkthrough
