@@ -1,3 +1,10 @@
+"""
+Source: FlashTorch Library but modified since the original code did not work for our model since the number of channels were not handled in their library.
+https://github.com/MisaOgura/flashtorch
+Additionally, we have also modified the scripts to handle different color-maps and speficic information to be displayed for our requirement.
+
+
+"""
 import warnings
 
 import matplotlib.pyplot as plt
@@ -126,7 +133,7 @@ class Backprop:
 
 
     def visualize(self, input_, target_class, guided=False, use_gpu=False,
-                  figsize=(16, 4), cmap='viridis', alpha=.5,
+                  figsize=(16, 4), cmap='viridis', base_cmap='gray', alpha=.5,
                   return_output=False, class_mapping=None):
         """Calculates gradients and visualizes the output.
         A method that combines the backprop operation and visualization.
@@ -176,14 +183,14 @@ class Backprop:
         subplots = [
             # (title, [(image1, cmap, alpha), (image2, cmap, alpha)])
             ('Input image',
-             [(format_for_plotting(input_), cmap, None)]),
+             [(format_for_plotting(input_), base_cmap, None)]),
          
-            ('Predicted: {}, Actual: {}'.format(self.top_class, self.target_class),
+            ('Gradient Intensity',
              [(format_for_plotting(standardize_and_clip(max_gradients)),
               cmap,
               None)]),
-            ('Predicted: {}, Actual: {}'.format(self.top_class, self.target_class),
-             [(format_for_plotting(input_), cmap, None),
+            ('Gradient overlay on image'.format(self.top_class, self.target_class),
+             [(format_for_plotting(input_), base_cmap, None),
               (format_for_plotting(standardize_and_clip(max_gradients)),
                cmap,
                alpha)])
@@ -193,11 +200,16 @@ class Backprop:
 
         for i, (title, images) in enumerate(subplots):
             ax = fig.add_subplot(1, len(subplots), i + 1)
-            ax.set_axis_off()
+            # ax.set_axis_off()
             ax.set_title(title)
+            text = 'Predicted: {}, Actual: {}'.format(self.top_class, self.target_class)
+            ax.set_ylabel(text, rotation=90, size='large')
 
             for image, cmap, alpha in images:
-                ax.imshow(image, cmap=cmap, alpha=alpha)
+                im = ax.imshow(image, cmap=cmap, alpha=alpha)
+                if title == 'Gradient Intensity':
+                    fig.colorbar(im, ax=ax)
+
 
         plt.show()
 

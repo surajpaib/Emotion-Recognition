@@ -10,9 +10,15 @@ Preprocessing Utils
 '''
 
 def normalize(image):
+    """
+    Normalize 8 bit image between 0 and 1
+    """
     return image/255.
 
 def preprocess(image):
+    """
+    Reshape, normalize and add channel dimension to the image
+    """
     dim = int(np.sqrt(image.size))
     image = image.reshape(dim, dim)
     image = normalize(image)
@@ -28,8 +34,15 @@ Training Utils
 '''
 
 def get_loss(args, class_weights):
+    """
+    Get loss from the torch.nn module by evaluating the specified string
+    
+    Args:
+    class_weights: Tensor of class weights corresponding to each class.
+    """
     loss_str = eval('torch.nn.{}'.format(args.loss))
 
+    # If balanced loss, set the weight of the loss from the specified argument
     if args.balanced_loss == 1:
         criterion = loss_str(weight=class_weights)
     else:
@@ -39,14 +52,30 @@ def get_loss(args, class_weights):
 
 
 def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
+    """
+    Save torch model state
+
+    Args:
+    state: Dictionary containing the model, optimizer and loss
+    is_best: Flag determining if the model has best validation loss so far.
+    filename: Save file name.
+    """
     torch.save(state, filename)
     if is_best:
         shutil.copyfile(filename, 'model_best.pth.tar')
 
 
-
 def apply_transforms(batch, transform):
+    """
+    Apply transformations over a batch
+    
+    Args:
+    batch: A single batch from the dataloader
+    transforms: Pytorch transforms list
+    """
     batch_images = batch["image"].numpy()
+
+    # For each image in the batch the transform is applied over the image. 
     for img_idx in range(batch_images.shape[0]):
         img = batch_images[img_idx,:,:,:].squeeze()
         img_transformed = transform(Image.fromarray(img))
