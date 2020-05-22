@@ -120,6 +120,28 @@ A pdf of the notebook can also be found at ```Visualizing_CNNs.pdf```
 ## Code walkthrough
 The model definition structure can be found under ```config/``` folder. The benefit of the model definition structure is that it can be really easy to change the model structure while running experiments and no changes to code need to be made to do so. This ensures a very scalable approach to experimentation.
 
+The json files 
+```
+-config/
+    -Baseline.json # Baseline configuration
+    -kernelSize_exp/
+        -53kernel.json
+        -55kernel.json
+        -73kernel.json
+        -75kernel.json
+    -nLayers_exp/
+        -5blocks.json
+        -6blocks.json
+        -7blocks.json
+    -normalization_exp/
+        -BatchNorm.json
+        -InstanceNorm.json
+```
+can be referred to see what parameters in terms of model architectures (Normalization, Number of layer, filter sizes and channels) are used. Detailed descriptions of how the json files work can be found in the files ```models/blocks.py``` and ```models/model.py```.
+
+Other parameters experimented with can be found as commandline arguments to the ```train.py``` script.
+
+
 The experiments and results are synced with [Weights and biases](https://wandb.com)
 
 The generated report can be found here
